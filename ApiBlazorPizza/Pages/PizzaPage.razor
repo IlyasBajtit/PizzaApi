@@ -1,0 +1,146 @@
+﻿@page "/pizza"
+@using ApiBlazorPizza.Models
+@using ApiBlazorPizza.Data
+@using ApiBlazorPizza.Services
+@inject PizzaService PizzaService
+@inject PanierService PanierService
+
+
+<h3>Pizza</h3>
+
+<label>
+    <input type="checkbox" @bind="isAdmin" />
+    Mode Admin
+</label>
+
+@if (isAdmin)
+{
+    <div>
+        <h3>Ajouter une nouvelle Pizza</h3>
+        <EditForm Model="@newPizza" OnValidSubmit="HandleValidSubmit">
+            <div>
+                <label>Nom de la pizza:</label>
+                <InputText @bind-Value="newPizza.Name" />
+            </div>
+            <div>
+                <label>Prix:</label>
+                <InputNumber @bind-Value="newPizza.Price" />
+            </div>
+            <div>
+                <label>Image (URL):</label>
+                <InputText @bind-Value="newPizza.ImageLink" />
+            </div>
+            <div>
+                <label>Ingrédients (séparés par une virgule):</label>
+                <InputTextArea @bind-Value="ingredientsText" />
+            </div>
+            <button type="submit">Ajouter</button>
+        </EditForm>
+    </div>
+}
+
+@if (PizzaService.GetPizzas().Any())
+{
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Prix</th>
+                            <th>Ingrédients</th>
+                            <th></th> 
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var pizza in PizzaService.GetPizzas())
+                        {
+                            <tr>
+                                <td><img src="@pizza.ImageLink" class="card-img-top" alt="Image de @pizza.Name"></td>
+                                <td>@pizza.Name</td>
+                                <td>@pizza.Price.ToString("C")</td>
+                                <td>@string.Join(", ", pizza.Ingredients.Select(i => i.Name))</td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary" @onclick="() => AjouterAuPanier(pizza)">Ajouter</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-4">
+
+
+
+                <h2>Panier</h2>
+                @if (PanierService.Articles.Any())
+                {
+                    <ul class="list-group mb-3">
+                        @foreach (var article in PanierService.Articles)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                @article.PizzaNom
+                                <span>@article.Prix.ToString("C") x @article.Quantite</span>
+                                <button class="btn btn-danger btn-sm" @onclick="() => SupprimerDuPanier(article.PizzaId)">X</button>
+                            </li>
+                        }
+                    </ul>
+                    <h3>Total: @PanierService.ObtenirTotal().ToString("C")</h3>
+                    <button @onclick="ViderLePanier">Vider le panier</button>
+                }
+                else
+                {
+                    <p>Votre panier est vide.</p>
+                }
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <p>Il n'y a actuellement aucune pizza disponible.</p>
+}
+
+@code {
+
+    private bool isAdmin = false;
+    private Pizza newPizza = new Pizza();
+    private string ingredientsText;
+
+    private void HandleValidSubmit()
+    {
+        var ingredientNames = ingredientsText.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                             .Select(i => i.Trim())
+                                             .Where(i => !string.IsNullOrEmpty(i));
+        newPizza.Ingredients.Clear();
+        foreach (var name in ingredientNames)
+        {
+            newPizza.Ingredients.Add(new Ingredient { Name = name });
+        }
+
+        FakeDb.Pizzas.Add(newPizza);
+    }
+
+
+    private void AjouterAuPanier(Pizza pizza)
+    {
+        PanierService.AjouterArticle(pizza, 1);
+    }
+
+    private void SupprimerDuPanier(int pizzaId)
+    {
+        PanierService.SupprimerArticle(pizzaId);
+    }
+
+    private void ViderLePanier()
+    {
+        PanierService.ViderPanier();
+    }
+}
