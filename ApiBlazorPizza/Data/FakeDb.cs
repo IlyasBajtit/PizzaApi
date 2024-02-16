@@ -1,5 +1,7 @@
 ﻿using ApiBlazorPizza.Models;
 
+
+namespace ApiBlazorPizza.Data;
 public static class FakeDb
 {
     public static List<Pizza> Pizzas { get; set; }
