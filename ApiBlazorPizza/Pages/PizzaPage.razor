@@ -15,26 +15,26 @@
 
 @if (isAdmin)
 {
-    <div>
+    <div class="admin-section">
         <h3>Ajouter une nouvelle Pizza</h3>
         <EditForm Model="@newPizza" OnValidSubmit="HandleValidSubmit">
-            <div>
+            <div class="form-group">
                 <label>Nom de la pizza:</label>
-                <InputText @bind-Value="newPizza.Name" />
+                <InputText @bind-Value="newPizza.Name" class="form-control" />
             </div>
-            <div>
+            <div class="form-group">
                 <label>Prix:</label>
-                <InputNumber @bind-Value="newPizza.Price" />
+                <InputNumber @bind-Value="newPizza.Price" class="form-control" />
             </div>
-            <div>
+            <div class="form-group">
                 <label>Image (URL):</label>
-                <InputText @bind-Value="newPizza.ImageLink" />
+                <InputText @bind-Value="newPizza.ImageLink" class="form-control" />
             </div>
-            <div>
+            <div class="form-group">
                 <label>Ingrédients (séparés par une virgule):</label>
-                <InputTextArea @bind-Value="ingredientsText" />
+                <InputTextArea @bind-Value="ingredientsText" class="form-control" />
             </div>
-            <button type="submit">Ajouter</button>
+            <button type="submit" class="btn btn-primary">Ajouter</button>
         </EditForm>
     </div>
 }
