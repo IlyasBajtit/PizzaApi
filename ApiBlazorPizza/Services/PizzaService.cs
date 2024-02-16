@@ -10,7 +10,6 @@ namespace ApiBlazorPizza.Services
         // Récupérer toutes les pizzas depuis FakeDb
         public IReadOnlyList<Pizza> GetPizzas() => FakeDb.Pizzas;
 
-        // La méthode AddPizza pourrait ajouter des pizzas directement à FakeDb
         public void AddPizza(Pizza pizza)
         {
             FakeDb.Pizzas.Add(pizza);
